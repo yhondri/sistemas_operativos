@@ -15,8 +15,23 @@
  */
 static int copynFile(FILE * origin, FILE * destination, unsigned int nBytes)
 {
-    // Complete the function
-    return -1;
+
+    int c, ret, numByteWrittens = 0;
+
+    /* Read file byte by byte */
+    while ((c = getc(origin)) != EOF) {
+
+        ret = putc((unsigned char) c, destination); //copia byte en el fichero de destino.
+        numByteWrittens += sizeof(ret);
+
+        if (ret == EOF){
+            fclose(destination);
+
+            return -1;
+        }
+    }
+
+    return numByteWrittens;
 }
 
 /** Loads a string from a file.
@@ -84,33 +99,49 @@ static stHeaderEntry* readHeader(FILE * tarFile, unsigned int *nFiles)
 int createTar(int nFiles, char *fileNames[], char tarName[])
 {
 
+    FILE *tarFile = NULL;
+
+    if ((tarFile = fopen(tarName, "wb")) == NULL) {
+        fprintf(stderr,"The input file %s could not be created \n", tarName);
+        exit(EXIT_FAILURE);
+    }
+
+//    if ((tarFile = fopen(tarName, "r")) == NULL) {
+//        fprintf(stderr,"The input file %s could not be opened \n", tarName);
+//        exit(EXIT_FAILURE);
+//    }
+
     stHeaderEntry* headerEntryArray = NULL;
     headerEntryArray = malloc(sizeof(stHeaderEntry)*nFiles);
 
+    int fileNamesLenght = 0;
+
     for (int i = 0; i < nFiles; i++) {
-        headerEntryArray[i].name = fileNames[i];
+        fileNamesLenght += strlen(fileNames[i])+1;
     }
+
+    /** Para calcular el byte donde empieza la región de datos.
+     * La región de cabecera se compone de 1 entero que contiene el número de documentos, nFiles para el header de cada fichero.
+     * La cabecera de cada fichero se compone de un string (nombre fichero) y 1 entero (número bytes del fichero).
+     */
+    int offData = sizeof(int) + (nFiles *sizeof(unsigned int)) + fileNamesLenght;
+
+    fseek(tarFile, offData, SEEK_SET); //Nos colocamos en el inicio de la región de datos.
 
     for (int i = 0; i < nFiles; i++) {
 
         FILE *file = NULL;
-        int c, ret;
 
-        if ((file = fopen(headerEntryArray[i].name, "r")) == NULL)
-            err(2, "The input file %s could not be opened", '');
-
-        /* Read file byte by byte */
-        while ((c = getc(file)) != EOF) {
-            /* Print byte to stdout */
-            ret = putc((unsigned char) c, stdout);
-
-            if (ret == EOF){
-                fclose(file);
-                err(3, "putc() failed!!");
-            }
+        if ((file = fopen(fileNames[i], "r")) == NULL) {
+            fprintf(stderr,"The input file %s could not be opened \n", fileNames[i]);
+            exit(EXIT_FAILURE);
         }
+
+        int numBytesCopied = copynFile(file, tarFile, UINT_MAX); //pasamos el TarFile justo en el punto donde queremos que empiece a escribir el siguiente fichero.
+        printf("NumBytes %d", numBytesCopied);
     }
 
+    fclose(tarFile);
 
     // Complete the function
     return EXIT_FAILURE;

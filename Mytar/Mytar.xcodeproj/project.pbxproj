@@ -28,7 +28,6 @@
 		564DDC302215D116002FE8E6 /* mytar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mytar.h; sourceTree = "<group>"; };
 		564DDC312215D116002FE8E6 /* mytar_routines.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mytar_routines.c; sourceTree = "<group>"; };
 		564DDC322215D116002FE8E6 /* mytar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mytar.c; sourceTree = "<group>"; };
-		564DDC352215D205002FE8E6 /* fichero_1 */ = {isa = PBXFileReference; lastKnownFileType = text; path = fichero_1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,7 +63,6 @@
 				564DDC312215D116002FE8E6 /* mytar_routines.c */,
 				564DDC322215D116002FE8E6 /* mytar.c */,
 				564DDC302215D116002FE8E6 /* mytar.h */,
-				564DDC352215D205002FE8E6 /* fichero_1 */,
 			);
 			path = Mytar;
 			sourceTree = "<group>";
