@@ -138,10 +138,28 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
         }
 
         int numBytesCopied = copynFile(file, tarFile, UINT_MAX); //pasamos el TarFile justo en el punto donde queremos que empiece a escribir el siguiente fichero.
-        printf("NumBytes %d", numBytesCopied);
+
+        headerEntryArray[i].name = fileNames[i];
+        headerEntryArray[i].size = numBytesCopied;
+
+//        printf("NumBytes %d", numBytesCopied);
     }
 
-    fclose(tarFile);
+    /**
+     * Copiar cabeceras.
+     */
+
+    fseek(tarFile, 0, SEEK_SET); //Nos colocamos en el inicio del fichero.
+    putc((unsigned char) nFiles, tarFile); //Copiamos el número de ficheros.
+
+    for (int i = 0; i < nFiles; i++) {
+        putc((unsigned char) headerEntryArray[i].name, tarFile); //Copiamos ruta/nombre de fichero.
+        putc((unsigned char) '\0', tarFile); //Copiamos el número de ficheros.
+        putc((unsigned int) headerEntryArray[i].size, tarFile); //Copiamos num bytes de fichero.
+    }
+
+    free(headerEntryArray); //Liberamos memoria.
+    fclose(tarFile); //Cerramos fichero.
 
     // Complete the function
     return EXIT_FAILURE;
