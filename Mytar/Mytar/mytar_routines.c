@@ -106,10 +106,10 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
         exit(EXIT_FAILURE);
     }
 
-//    if ((tarFile = fopen(tarName, "r")) == NULL) {
-//        fprintf(stderr,"The input file %s could not be opened \n", tarName);
-//        exit(EXIT_FAILURE);
-//    }
+    //    if ((tarFile = fopen(tarName, "r")) == NULL) {
+    //        fprintf(stderr,"The input file %s could not be opened \n", tarName);
+    //        exit(EXIT_FAILURE);
+    //    }
 
     stHeaderEntry* headerEntryArray = NULL;
     headerEntryArray = malloc(sizeof(stHeaderEntry)*nFiles);
@@ -142,20 +142,32 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
         headerEntryArray[i].name = fileNames[i];
         headerEntryArray[i].size = numBytesCopied;
 
-//        printf("NumBytes %d", numBytesCopied);
+        //        printf("NumBytes %d", numBytesCopied);
     }
 
-    /**
-     * Copiar cabeceras.
-     */
-
+    /**Copiar cabeceras.*/
     fseek(tarFile, 0, SEEK_SET); //Nos colocamos en el inicio del fichero.
-    putc((unsigned char) nFiles, tarFile); //Copiamos el número de ficheros.
+    char numFiles = nFiles + '0'; //Convertirmos entero a char.
+    putc((unsigned char) numFiles, tarFile); //Copiamos el número de ficheros.
 
     for (int i = 0; i < nFiles; i++) {
-        putc((unsigned char) headerEntryArray[i].name, tarFile); //Copiamos ruta/nombre de fichero.
-        putc((unsigned char) '\0', tarFile); //Copiamos el número de ficheros.
-        putc((unsigned int) headerEntryArray[i].size, tarFile); //Copiamos num bytes de fichero.
+        int length = 0;
+        length += strlen(headerEntryArray[i].name)+1;
+        for(int j = 0; j < length-1; j++) {
+            putc((unsigned char)headerEntryArray[i].name[j], tarFile);
+        }
+        putc((unsigned char)'\0', tarFile);
+
+        //        char bytesOfFile = headerEntryArray[i].size + '0'; //Convertirmos entero a char.
+
+        char bytesOfFile;
+        if(headerEntryArray[i].size < 10) {
+            bytesOfFile = headerEntryArray[i].size + '0';
+        } else {
+            bytesOfFile = 'A'+headerEntryArray[i].size-10;
+        }
+
+        fprintf(tarFile, "%d", headerEntryArray[i].size);
     }
 
     free(headerEntryArray); //Liberamos memoria.
