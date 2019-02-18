@@ -106,11 +106,6 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
         exit(EXIT_FAILURE);
     }
 
-    //    if ((tarFile = fopen(tarName, "r")) == NULL) {
-    //        fprintf(stderr,"The input file %s could not be opened \n", tarName);
-    //        exit(EXIT_FAILURE);
-    //    }
-
     stHeaderEntry* headerEntryArray = NULL;
     headerEntryArray = malloc(sizeof(stHeaderEntry)*nFiles);
 
@@ -124,7 +119,7 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
      * La región de cabecera se compone de 1 entero que contiene el número de documentos, nFiles para el header de cada fichero.
      * La cabecera de cada fichero se compone de un string (nombre fichero) y 1 entero (número bytes del fichero).
      */
-    int offData = sizeof(int) + (nFiles *sizeof(unsigned int)) + fileNamesLenght;
+    int offData = sizeof(int) + (nFiles * sizeof(unsigned int)) + fileNamesLenght;
 
     fseek(tarFile, offData, SEEK_SET); //Nos colocamos en el inicio de la región de datos.
 
@@ -137,7 +132,7 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
             exit(EXIT_FAILURE);
         }
 
-        int numBytesCopied = copynFile(file, tarFile, UINT_MAX); //pasamos el TarFile justo en el punto donde queremos que empiece a escribir el siguiente fichero.
+        int numBytesCopied = copynFile(file, tarFile, UINT_MAX); //Devuelve el número de ficheros copiados.
 
         headerEntryArray[i].name = fileNames[i];
         headerEntryArray[i].size = numBytesCopied;
