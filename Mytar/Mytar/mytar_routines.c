@@ -98,7 +98,6 @@ static stHeaderEntry* readHeader(FILE * tarFile, unsigned int *nFiles)
  */
 int createTar(int nFiles, char *fileNames[], char tarName[])
 {
-
     FILE *tarFile = NULL;
 
     if ((tarFile = fopen(tarName, "wb")) == NULL) {
@@ -141,36 +140,25 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
     }
 
     /**Copiar cabeceras.*/
-    fseek(tarFile, 0, SEEK_SET); //Nos colocamos en el inicio del fichero.
-    char numFiles = nFiles + '0'; //Convertirmos entero a char.
-    putc((unsigned char) numFiles, tarFile); //Copiamos el número de ficheros.
+    rewind(tarFile); //Nos colocamos en el inicio del fichero.
+
+//    size_t result =  fwrite(&nFiles, sizeof(int), 1, tarFile);
+    fprintf(tarFile, "%d", nFiles);
 
     for (int i = 0; i < nFiles; i++) {
-        int length = 0;
-        length += strlen(headerEntryArray[i].name)+1;
-        for(int j = 0; j < length-1; j++) {
-            putc((unsigned char)headerEntryArray[i].name[j], tarFile);
-        }
-        putc((unsigned char)'\0', tarFile);
-
-        //        char bytesOfFile = headerEntryArray[i].size + '0'; //Convertirmos entero a char.
-
-        char bytesOfFile;
-        if(headerEntryArray[i].size < 10) {
-            bytesOfFile = headerEntryArray[i].size + '0';
-        } else {
-            bytesOfFile = 'A'+headerEntryArray[i].size-10;
-        }
-
+        fwrite(headerEntryArray[i].name, strlen(headerEntryArray[i].name), nFiles, tarFile);
         fprintf(tarFile, "%d", headerEntryArray[i].size);
     }
 
-    free(headerEntryArray); //Liberamos memoria.
     fclose(tarFile); //Cerramos fichero.
+
+    free(headerEntryArray); //Liberamos memoria.
 
     // Complete the function
     return EXIT_FAILURE;
 }
+
+
 
 /** Extract files stored in a tarball archive
  *
