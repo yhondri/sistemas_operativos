@@ -5,6 +5,14 @@
 #include "mytar.h"
 
 
+//Leer y pasar a texto leíble.
+//char buffer[100];
+//int itemsScanned = 0;
+//if(fgets(buffer, 100, p_finput) != NULL){
+//    itemsScanned = sscanf(buffer, "%d", &a);
+//}
+
+
 /** Copy nBytes bytes from the origin file to the destination file.
  *
  * origin: pointer to the FILE descriptor associated with the origin file
@@ -65,6 +73,11 @@ static stHeaderEntry* readHeader(FILE * tarFile, unsigned int *nFiles)
     stHeaderEntry* headerEntryArray = NULL;
     unsigned int nr_files = 0;
     /* ... Read the number of files (N) from tarfile and store it in nr_files ... */
+    nr_files = getc(tarFile)  - '0';
+//    if(fread(&nr_files, sizeof(int), 1, tarFile) != 1) {
+//        return NULL;
+//    }
+
     /* Allocate memory for the array */
     headerEntryArray = malloc(sizeof(stHeaderEntry)*nr_files);
     /*... Read the (pathname,size) pairs from tarFile and
@@ -170,8 +183,20 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
  * stored in the data section of the tarball.
  *
  */
-int extractTar(char tarName[])
-{
+int extractTar(char tarName[]) {
+    FILE *extractedFile;
+    FILE *tarFile;
+
+    if ((tarFile = fopen(tarName, "r")) == NULL) {
+        fprintf(stderr,"The input file %s could not be created \n", tarName);
+        exit(EXIT_FAILURE);
+    }
+
+
+    unsigned nFiles;
+
+    stHeaderEntry *headerEntryArray = readHeader(tarFile, &nFiles); //Leemos la cabecera y calculamos el número de ficheros en el tar.
+
     // Complete the function
     return EXIT_FAILURE;
 }
