@@ -140,13 +140,13 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
     }
 
     /**Copiar cabeceras.*/
-    rewind(tarFile); //Nos colocamos en el inicio del fichero.
-
-//    size_t result =  fwrite(&nFiles, sizeof(int), 1, tarFile);
-    fprintf(tarFile, "%d", nFiles);
+//    rewind(tarFile);
+    fseek(tarFile, 0, SEEK_SET); //Nos colocamos en el inicio del fichero.
+    fprintf(tarFile, "%d",nFiles); //Escribimos el número de ficheros.
 
     for (int i = 0; i < nFiles; i++) {
-        fwrite(headerEntryArray[i].name, strlen(headerEntryArray[i].name), nFiles, tarFile);
+//        fwrite(headerEntryArray[i].name, strlen(headerEntryArray[i].name), nFiles, tarFile);
+        fprintf(tarFile, "%s", headerEntryArray[i].name);
         fprintf(tarFile, "%d", headerEntryArray[i].size);
     }
 

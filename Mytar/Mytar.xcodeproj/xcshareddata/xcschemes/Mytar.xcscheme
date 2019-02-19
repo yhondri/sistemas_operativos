@@ -75,7 +75,11 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "fichero_1"
+            argument = "a.txt"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "b.txt"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
