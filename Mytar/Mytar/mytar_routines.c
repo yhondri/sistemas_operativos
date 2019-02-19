@@ -135,8 +135,6 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
 
         headerEntryArray[i].name = fileNames[i];
         headerEntryArray[i].size = numBytesCopied;
-
-        //        printf("NumBytes %d", numBytesCopied);
     }
 
     /**Copiar cabeceras.*/
@@ -145,7 +143,6 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
     fprintf(tarFile, "%d",nFiles); //Escribimos el número de ficheros.
 
     for (int i = 0; i < nFiles; i++) {
-//        fwrite(headerEntryArray[i].name, strlen(headerEntryArray[i].name), nFiles, tarFile);
         fprintf(tarFile, "%s", headerEntryArray[i].name);
         fprintf(tarFile, "%d", headerEntryArray[i].size);
     }
@@ -154,8 +151,7 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
 
     free(headerEntryArray); //Liberamos memoria.
 
-    // Complete the function
-    return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }
 
 
