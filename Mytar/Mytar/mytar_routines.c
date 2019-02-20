@@ -55,8 +55,19 @@ static int copynFile(FILE * origin, FILE * destination, unsigned int nBytes)
  */
 static char* loadstr(FILE * file)
 {
-    // Complete the function
-    return NULL;
+    int c, numCharReads = 1;
+
+    /* Read file byte by byte */
+    while ((c = getc(file)) != EOF && (c != 0)) {
+        numCharReads++;
+    }
+
+    char *readString = malloc(sizeof(numCharReads));
+
+    fseek(file, (0 - numCharReads), SEEK_CUR); //Nos colocamos en la posición que tenemos que leer.
+    fread(readString, sizeof(readString), 1, file); //Leemos.
+
+    return readString;
 }
 
 /** Read tarball header and store it in memory.
@@ -74,18 +85,21 @@ static stHeaderEntry* readHeader(FILE * tarFile, unsigned int *nFiles)
     unsigned int nr_files = 0;
     /* ... Read the number of files (N) from tarfile and store it in nr_files ... */
     nr_files = getc(tarFile)  - '0';
-//    if(fread(&nr_files, sizeof(int), 1, tarFile) != 1) {
-//        return NULL;
-//    }
 
     /* Allocate memory for the array */
-    headerEntryArray = malloc(sizeof(stHeaderEntry)*nr_files);
+    headerEntryArray = (stHeaderEntry *) malloc(sizeof(stHeaderEntry)*nr_files);
+
     /*... Read the (pathname,size) pairs from tarFile and
      store them in the array ...*/
+    for (int i = 0; i < nr_files; i++) {
+        headerEntryArray[i].name = loadstr(tarFile);
+        headerEntryArray[i].size = getc(tarFile);
+    }
+
     /* Store the number of files in the output parameter */
     (*nFiles) = nr_files;
 
-    return NULL;
+    return headerEntryArray;
 }
 
 /** Creates a tarball archive 
@@ -151,12 +165,13 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
     }
 
     /**Copiar cabeceras.*/
-//    rewind(tarFile);
+    //    rewind(tarFile);
     fseek(tarFile, 0, SEEK_SET); //Nos colocamos en el inicio del fichero.
     fprintf(tarFile, "%d",nFiles); //Escribimos el número de ficheros.
 
     for (int i = 0; i < nFiles; i++) {
         fprintf(tarFile, "%s", headerEntryArray[i].name);
+        fprintf(tarFile, "%c", '\0');
         fprintf(tarFile, "%d", headerEntryArray[i].size);
     }
 
