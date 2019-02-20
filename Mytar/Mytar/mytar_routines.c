@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include "mytar.h"
 
-
 //Leer y pasar a texto leíble.
 //char buffer[100];
 //int itemsScanned = 0;
@@ -27,7 +26,7 @@ static int copynFile(FILE * origin, FILE * destination, unsigned int nBytes)
     int c, ret, numByteWrittens = 0;
 
     /* Read file byte by byte */
-    while ((c = getc(origin)) != EOF) {
+    while ((c = getc(origin)) != EOF && (numByteWrittens < nBytes)) {
 
         ret = putc((unsigned char) c, destination); //copia byte en el fichero de destino.
         numByteWrittens += sizeof(ret);
@@ -55,20 +54,46 @@ static int copynFile(FILE * origin, FILE * destination, unsigned int nBytes)
  */
 static char* loadstr(FILE * file)
 {
-    int c, numCharReads = 1;
+    int c, numCharReads = 0;
 
     /* Read file byte by byte */
-    while ((c = getc(file)) != EOF && (c != 0)) {
+    while ((c = getc(file)) != EOF && (c != '\0')) {
         numCharReads++;
     }
 
-    char *readString = malloc(sizeof(numCharReads));
+    numCharReads++;
 
+    int offData = sizeof(char)*numCharReads;
+    char *readString = malloc(sizeof(char)*numCharReads);
     fseek(file, (0 - numCharReads), SEEK_CUR); //Nos colocamos en la posición que tenemos que leer.
-    fread(readString, sizeof(readString), 1, file); //Leemos.
+    fread(readString, offData, 1, file); //Leemos.
 
     return readString;
 }
+
+static int loadNumber(FILE * file)
+{
+    int c, numCharReads = 1;
+
+    /* Read file byte by byte */
+    while ((c = getc(file)) != EOF && (c >= '0' && c <= '9')) {
+        numCharReads++;
+    }
+
+    int *sum = malloc(sizeof(int)*numCharReads);
+
+    fseek(file, (0 - numCharReads), SEEK_CUR); //Nos colocamos en la posición que tenemos que leer.
+
+    if ((c = getc(file)) != EOF && (c >= '0' && c <= '9')) {
+        do {
+            *sum = ((*sum)*10);
+            *sum = ((*sum)+ (c - '0'));
+        } while ((c = getc(file)) != EOF && (c >= '0' && c <= '9'));
+    }
+
+    return *sum;
+}
+
 
 /** Read tarball header and store it in memory.
  *
@@ -93,7 +118,9 @@ static stHeaderEntry* readHeader(FILE * tarFile, unsigned int *nFiles)
      store them in the array ...*/
     for (int i = 0; i < nr_files; i++) {
         headerEntryArray[i].name = loadstr(tarFile);
-        headerEntryArray[i].size = getc(tarFile);
+        headerEntryArray[i].size = loadNumber(tarFile);
+        //        fscanf(tarFile, "%d", &t);
+        printf("Leído %d \n",  headerEntryArray[i].size);
     }
 
     /* Store the number of files in the output parameter */
@@ -182,8 +209,6 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
     return EXIT_SUCCESS;
 }
 
-
-
 /** Extract files stored in a tarball archive
  *
  * tarName: tarball's pathname
@@ -207,11 +232,38 @@ int extractTar(char tarName[]) {
         exit(EXIT_FAILURE);
     }
 
-
     unsigned nFiles;
 
     stHeaderEntry *headerEntryArray = readHeader(tarFile, &nFiles); //Leemos la cabecera y calculamos el número de ficheros en el tar.
 
+    if (headerEntryArray == NULL) {
+        return EXIT_FAILURE;
+    } else {
+        for (int i = 0; i < nFiles; i++) {
+
+            fprintf(stderr,"Cabecera de i %d \n", headerEntryArray[i].size);
+
+            FILE *newFile = NULL;
+
+            if ((newFile = fopen(headerEntryArray[i].name, "wb")) == NULL) { //Crea el fichero que se va a extraer.
+                fclose(tarFile);
+
+                fprintf(stderr,"The input file %s could not be created \n", tarName);
+                exit(EXIT_FAILURE);
+            }
+
+            int numBytesCopied = copynFile(tarFile, newFile, headerEntryArray[i].size); //Devuelve el número de ficheros copiados.
+            if (headerEntryArray[i].size != numBytesCopied) { //Crea el fichero que se va a extraer.
+                fclose(newFile);
+                fclose(tarFile);
+
+                fprintf(stderr, "Error extracting file %s \n", headerEntryArray[i].name);
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        fclose(tarFile);
+    }
     // Complete the function
     return EXIT_FAILURE;
 }
