@@ -27,8 +27,6 @@ static int copynFile(FILE * origin, FILE * destination, unsigned int nBytes)
 
     /* Read file byte by byte */
     while ((c = getc(origin)) != EOF && (numByteWrittens < nBytes)) {
-//       printf("%c", c);
-
         ret = putc((unsigned char) c, destination); //copia byte en el fichero de destino.
         numByteWrittens ++;
 
@@ -41,8 +39,6 @@ static int copynFile(FILE * origin, FILE * destination, unsigned int nBytes)
 
     //Nos colocamos en el último byte leído así en la siguiente lectura estamos preparados para leer el primer byte del siguiente fichero. 
     fseek(origin, -1, SEEK_CUR); //SEEK_CUR = Se coloca desde la posición actual N bytes.
-
-//    printf("\n");
 
     return numByteWrittens;
 }

@@ -1,0 +1,28 @@
+Alumno: Yhondri Josué Acosta Novas
+Laboratorio: Lab 04 Puesto 01
+
+Detalles:
+
+Para el desarrollo de esta práctica he modificado el archivo mytar_routines.c
+En él he implementado las funciones sugeridas en el guión de la práctica:
+
+- copynFile
+- loadstr
+- readHeader
+- createTar
+- extractTar
+
+Y he creado las siguientes funciones que me han servido para implementar el resto de funciones anteriormente mencionadas:
+
+- loadNumber: Carga un número desde un fichero. La lectura del fichero se hará hasta encontrar un character no númerico. 
+- getOffData: Calcula el tamaño que ocupará la región de cabecera a partir del número de ficheros y los nombres de los ficheros. 
+
+Por último he creado 2 scripts para la comprobación de la práctica:
+
+- script.sh: Es el script que exige la práctica.
+- script_colors.sh: Este script muestra los mensajes coloreados para ayudar en la identificación de los mismos. 
+Mensajes informativos: Azul. 
+Mensajes de error: Rojos.
+Mensaje de eliminación de fichero: Naranja/marrón. 
+Mensaje de comprobación de ficheros (diff): Blanco. 
+Mensaje de confirmación de ejecución satisfactoria: Verde. 
