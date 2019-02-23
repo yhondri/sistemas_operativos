@@ -27,9 +27,10 @@ static int copynFile(FILE * origin, FILE * destination, unsigned int nBytes)
 
     /* Read file byte by byte */
     while ((c = getc(origin)) != EOF && (numByteWrittens < nBytes)) {
+       printf("%c", c);
 
         ret = putc((unsigned char) c, destination); //copia byte en el fichero de destino.
-        numByteWrittens += sizeof(ret);
+        numByteWrittens ++;
 
         if (ret == EOF){
             fclose(destination);
@@ -37,6 +38,11 @@ static int copynFile(FILE * origin, FILE * destination, unsigned int nBytes)
             return -1;
         }
     }
+
+    //Nos colocamos en el último byte leído así en la siguiente lectura estamos preparados para leer el primer byte del siguiente fichero. 
+    fseek(origin, -1, SEEK_CUR); //SEEK_CUR = Se coloca desde la posición actual N bytes.
+
+    printf("\n");
 
     return numByteWrittens;
 }
@@ -84,6 +90,9 @@ static int loadNumber(FILE * file)
 
     fseek(file, (0 - numCharReads), SEEK_CUR); //Nos colocamos en la posición que tenemos que leer.
 
+    /**
+     * Leemos cada dígito del número de bytes del fichero a leer.
+     */
     if ((c = getc(file)) != EOF && (c >= '0' && c <= '9')) {
         do {
             *sum = ((*sum)*10);
@@ -91,9 +100,25 @@ static int loadNumber(FILE * file)
         } while ((c = getc(file)) != EOF && (c >= '0' && c <= '9'));
     }
 
+    fseek(file, -1, SEEK_CUR); //Dejamos el puntero en la posición del último dígito leído.
+
     return *sum;
 }
 
+static int getOffData(int nFiles, char *fileNames[]) {
+
+    int fileNamesLenght = 0;
+
+    for (int i = 0; i < nFiles; i++) {
+        fileNamesLenght += strlen(fileNames[i])+1;
+    }
+
+    /** Para calcular el byte donde empieza la región de datos.
+     * La región de cabecera se compone de 1 entero que contiene el número de documentos, nFiles para el header de cada fichero.
+     * La cabecera de cada fichero se compone de un string (nombre fichero) y 1 entero (número bytes del fichero).
+     */
+    return sizeof(int) + nFiles * sizeof(unsigned int) + fileNamesLenght;
+}
 
 /** Read tarball header and store it in memory.
  *
@@ -120,7 +145,7 @@ static stHeaderEntry* readHeader(FILE * tarFile, unsigned int *nFiles)
         headerEntryArray[i].name = loadstr(tarFile);
         headerEntryArray[i].size = loadNumber(tarFile);
         //        fscanf(tarFile, "%d", &t);
-        printf("Leído %d \n",  headerEntryArray[i].size);
+//        printf("Leído %s -- %d \n",  headerEntryArray[i].name, headerEntryArray[i].size);
     }
 
     /* Store the number of files in the output parameter */
@@ -172,9 +197,9 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
      * La región de cabecera se compone de 1 entero que contiene el número de documentos, nFiles para el header de cada fichero.
      * La cabecera de cada fichero se compone de un string (nombre fichero) y 1 entero (número bytes del fichero).
      */
-    int offData = sizeof(int) + (nFiles * sizeof(unsigned int)) + fileNamesLenght;
+    int offData = getOffData(nFiles, fileNames);
 
-    fseek(tarFile, offData, SEEK_SET); //Nos colocamos en el inicio de la región de datos.
+    fseek(tarFile, offData, SEEK_CUR); //Nos colocamos en el inicio de la región de datos.
 
     for (int i = 0; i < nFiles; i++) {
 
@@ -192,7 +217,6 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
     }
 
     /**Copiar cabeceras.*/
-    //    rewind(tarFile);
     fseek(tarFile, 0, SEEK_SET); //Nos colocamos en el inicio del fichero.
     fprintf(tarFile, "%d",nFiles); //Escribimos el número de ficheros.
 
@@ -224,7 +248,6 @@ int createTar(int nFiles, char *fileNames[], char tarName[])
  *
  */
 int extractTar(char tarName[]) {
-    FILE *extractedFile;
     FILE *tarFile;
 
     if ((tarFile = fopen(tarName, "r")) == NULL) {
@@ -239,16 +262,23 @@ int extractTar(char tarName[]) {
     if (headerEntryArray == NULL) {
         return EXIT_FAILURE;
     } else {
+        char *fileNames[nFiles];
         for (int i = 0; i < nFiles; i++) {
+//            fprintf(stdout,"%s \n", headerEntryArray[i].name);
 
-            fprintf(stderr,"Cabecera de i %d \n", headerEntryArray[i].size);
+            fileNames[i] = headerEntryArray[i].name;
+        }
+        int offData = getOffData(nFiles, fileNames);
 
+        fseek(tarFile, offData, SEEK_SET); //SEEK_SET = Desde el inicio del ficheor, muévete offData bytes.
+
+        for (int i = 0; i < nFiles; i++) {
             FILE *newFile = NULL;
 
             if ((newFile = fopen(headerEntryArray[i].name, "wb")) == NULL) { //Crea el fichero que se va a extraer.
                 fclose(tarFile);
 
-                fprintf(stderr,"The input file %s could not be created \n", tarName);
+                fprintf(stderr,"The input file %s could not be created \n", headerEntryArray[i].name);
                 exit(EXIT_FAILURE);
             }
 
@@ -257,7 +287,7 @@ int extractTar(char tarName[]) {
                 fclose(newFile);
                 fclose(tarFile);
 
-                fprintf(stderr, "Error extracting file %s \n", headerEntryArray[i].name);
+                fprintf(stderr, "Error extracting file %s: Num bytes copied %i - File Size %i \n", headerEntryArray[i].name, numBytesCopied, headerEntryArray[i].size);
                 exit(EXIT_FAILURE);
             }
         }
