@@ -27,7 +27,7 @@ static int copynFile(FILE * origin, FILE * destination, unsigned int nBytes)
 
     /* Read file byte by byte */
     while ((c = getc(origin)) != EOF && (numByteWrittens < nBytes)) {
-       printf("%c", c);
+//       printf("%c", c);
 
         ret = putc((unsigned char) c, destination); //copia byte en el fichero de destino.
         numByteWrittens ++;
@@ -42,7 +42,7 @@ static int copynFile(FILE * origin, FILE * destination, unsigned int nBytes)
     //Nos colocamos en el último byte leído así en la siguiente lectura estamos preparados para leer el primer byte del siguiente fichero. 
     fseek(origin, -1, SEEK_CUR); //SEEK_CUR = Se coloca desde la posición actual N bytes.
 
-    printf("\n");
+//    printf("\n");
 
     return numByteWrittens;
 }
@@ -77,7 +77,7 @@ static char* loadstr(FILE * file)
     return readString;
 }
 
-static int loadNumber(FILE * file)
+static unsigned int loadNumber(FILE * file)
 {
     int c, numCharReads = 1;
 
@@ -86,7 +86,7 @@ static int loadNumber(FILE * file)
         numCharReads++;
     }
 
-    int *sum = malloc(sizeof(int)*numCharReads);
+    unsigned int sum = 0;
 
     fseek(file, (0 - numCharReads), SEEK_CUR); //Nos colocamos en la posición que tenemos que leer.
 
@@ -95,14 +95,14 @@ static int loadNumber(FILE * file)
      */
     if ((c = getc(file)) != EOF && (c >= '0' && c <= '9')) {
         do {
-            *sum = ((*sum)*10);
-            *sum = ((*sum)+ (c - '0'));
+             sum = ((sum) * 10);
+             sum = ((sum) + (c - '0'));
         } while ((c = getc(file)) != EOF && (c >= '0' && c <= '9'));
     }
 
     fseek(file, -1, SEEK_CUR); //Dejamos el puntero en la posición del último dígito leído.
 
-    return *sum;
+    return sum;
 }
 
 static int getOffData(int nFiles, char *fileNames[]) {
@@ -144,8 +144,6 @@ static stHeaderEntry* readHeader(FILE * tarFile, unsigned int *nFiles)
     for (int i = 0; i < nr_files; i++) {
         headerEntryArray[i].name = loadstr(tarFile);
         headerEntryArray[i].size = loadNumber(tarFile);
-        //        fscanf(tarFile, "%d", &t);
-//        printf("Leído %s -- %d \n",  headerEntryArray[i].name, headerEntryArray[i].size);
     }
 
     /* Store the number of files in the output parameter */
@@ -264,8 +262,6 @@ int extractTar(char tarName[]) {
     } else {
         char *fileNames[nFiles];
         for (int i = 0; i < nFiles; i++) {
-//            fprintf(stdout,"%s \n", headerEntryArray[i].name);
-
             fileNames[i] = headerEntryArray[i].name;
         }
         int offData = getOffData(nFiles, fileNames);
@@ -295,5 +291,5 @@ int extractTar(char tarName[]) {
         fclose(tarFile);
     }
     // Complete the function
-    return EXIT_FAILURE;
+    return EXIT_SUCCESS ;
 }
