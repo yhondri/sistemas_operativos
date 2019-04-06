@@ -67,7 +67,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "examples/example1.txt"
+            argument = "examples/example2.txt"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -76,6 +76,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "FCFS"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "PRIO"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
