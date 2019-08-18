@@ -15,6 +15,7 @@
 		560AEE8022589D1300E272F2 /* slist.c in Sources */ = {isa = PBXBuildFile; fileRef = 560AEE7A22589D1300E272F2 /* slist.c */; };
 		560AEE8D2258A4BA00E272F2 /* sched_fcfs.c in Sources */ = {isa = PBXBuildFile; fileRef = 560AEE8C2258A4BA00E272F2 /* sched_fcfs.c */; };
 		560AEE8F2258ACE400E272F2 /* sched_prio.c in Sources */ = {isa = PBXBuildFile; fileRef = 560AEE8E2258ACE400E272F2 /* sched_prio.c */; };
+		56CD5E4B2272049F007F36F3 /* sched_RRdynQ.c in Sources */ = {isa = PBXBuildFile; fileRef = 56CD5E4A2272049E007F36F3 /* sched_RRdynQ.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -53,6 +54,7 @@
 		560AEE8B22589D3800E272F2 /* example4.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = example4.txt; sourceTree = "<group>"; };
 		560AEE8C2258A4BA00E272F2 /* sched_fcfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sched_fcfs.c; sourceTree = "<group>"; };
 		560AEE8E2258ACE400E272F2 /* sched_prio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sched_prio.c; sourceTree = "<group>"; };
+		56CD5E4A2272049E007F36F3 /* sched_RRdynQ.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sched_RRdynQ.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 				560AEE7622589D1300E272F2 /* barrier.h */,
 				560AEE7722589D1300E272F2 /* list.h */,
 				560AEE7322589D1300E272F2 /* main.c */,
+				56CD5E4A2272049E007F36F3 /* sched_RRdynQ.c */,
 				560AEE8C2258A4BA00E272F2 /* sched_fcfs.c */,
 				560AEE8E2258ACE400E272F2 /* sched_prio.c */,
 				560AEE7522589D1300E272F2 /* sched_rr.c */,
@@ -180,6 +183,7 @@
 				560AEE7D22589D1300E272F2 /* sched_sjf.c in Sources */,
 				560AEE8D2258A4BA00E272F2 /* sched_fcfs.c in Sources */,
 				560AEE8022589D1300E272F2 /* slist.c in Sources */,
+				56CD5E4B2272049F007F36F3 /* sched_RRdynQ.c in Sources */,
 				560AEE8F2258ACE400E272F2 /* sched_prio.c in Sources */,
 				560AEE7B22589D1300E272F2 /* barrier.c in Sources */,
 				560AEE7F22589D1300E272F2 /* sched.c in Sources */,

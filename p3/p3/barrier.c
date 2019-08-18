@@ -65,7 +65,7 @@ int sys_barrier_wait(sys_barrier_t *barrier)
 	   - Don't forget to release the lock before returning from the function
 
 	    ... To be completed ....
-	*/
+
     
     //Adquirimos el cerrojo
     pthread_mutext_lock(&barrier->mutex);
@@ -81,7 +81,7 @@ int sys_barrier_wait(sys_barrier_t *barrier)
     
     //Liberamos el cerrojo
     pthread_mutext_unlock(&barrier->mutex);
-    
+        */
 	return 0;
 }
 
